@@ -92,12 +92,15 @@ def _mail_recipient(
 
     # Send the email using Python's smtplib.
     smtp_server = config.get('smtp.server')
+    smtp_server_split = smtp_server.split(':')
+    smtp_server = smtp_server_split[0]
+    smtp_port = int(smtp_server_split[1]) if len(smtp_server_split) > 1 else 25
     smtp_starttls = config.get('smtp.starttls')
     smtp_user = config.get('smtp.user')
     smtp_password = config.get('smtp.password')
 
     try:
-        smtp_connection = smtplib.SMTP(smtp_server)
+        smtp_connection = smtplib.SMTP(smtp_server, smtp_port)
     except (socket.error, smtplib.SMTPConnectError) as e:
         log.exception(e)
         raise MailerException('SMTP server could not be connected to: "%s" %s'
